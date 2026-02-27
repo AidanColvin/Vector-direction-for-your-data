@@ -13,3 +13,6 @@ clean:
 run:
 	python3 src/python_scripts/run_preprocessing.py
 	python3 src/python_scripts/main_full_run.py
+
+test:
+	pytest tests/python_tests/
