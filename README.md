@@ -1,4 +1,4 @@
-# Diabetes Prediction — Kaggle Playground Series S5E12
+# BioBeat: Smoker Status Prediction — Kaggle 
 
 [![R](https://img.shields.io/badge/Language-R-276DC3?logo=r&logoColor=white)](https://www.r-project.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
