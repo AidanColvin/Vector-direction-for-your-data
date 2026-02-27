@@ -1,22 +1,23 @@
 import streamlit as st
 import os
+import sys
 import uuid
 import subprocess
 import shutil
+
+# 1. CRITICAL FIX: Add the scripts directory to the Python Path
+# This allows 'import file_io' to work on Streamlit Cloud
+current_dir = os.path.dirname(os.path.abspath(__file__))
+scripts_path = os.path.join(current_dir, "src", "python_scripts")
+cpp_path = os.path.join(current_dir, "src", "cpp_engine")
+sys.path.append(scripts_path)
+sys.path.append(cpp_path)
+
+# Now we can safely import your modules
 from file_io.header_parser import detect_target_column
 from file_io.schema_check import validate_schemas
 
-def create_zip_archive(workspace_path, output_zip):
-    """
-    Creates a ZIP archive of the results.
-    Includes the report, submissions, and visualizations.
-    """
-    results_path = os.path.join(workspace_path, "processed")
-    if os.path.exists(results_path):
-        shutil.make_archive(output_zip.replace('.zip', ''), 'zip', results_path)
-        return True
-    return False
-
+# Page Branding
 st.set_page_config(page_title="Vector | Direction for your data...", layout="wide")
 
 st.markdown("<h1 style='text-align: center; color: #38bdf8;'>Vector</h1>", unsafe_allow_html=True)
@@ -42,6 +43,7 @@ if uploaded_files:
         file_path = os.path.join(workspace, "raw", uploaded_file.name)
         with open(file_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
+        st.info(f"📄 **Detected:** {uploaded_file.name}")
 
     train_file = next((f for f in uploaded_files if "train" in f.name.lower()), None)
     test_file = next((f for f in uploaded_files if "test" in f.name.lower()), None)
@@ -52,24 +54,20 @@ if uploaded_files:
         target = detect_target_column(train_path)
         
         if st.button("🚀 EXECUTE VECTOR GAUNTLET"):
-            with st.spinner("Processing..."):
+            with st.spinner("Executing Pipeline..."):
                 try:
-                    # Run the pipeline using the workspace paths
+                    # Run the pipeline
                     subprocess.run(["make", "build"], check=True)
+                    # Note: You may need to pass the workspace paths to your scripts
                     subprocess.run(["python3", "src/python_scripts/run_preprocessing.py"], check=True)
                     subprocess.run(["python3", "src/python_scripts/main_full_run.py"], check=True)
                     
-                    st.success("✅ Analysis Complete.")
+                    st.success("✅ Direction Determined. Analysis Complete.")
                     
-                    # Create and provide the Download All button
+                    # Zip and Download
                     zip_name = f"Vector_Results_{st.session_state.session_id}.zip"
-                    if create_zip_archive(workspace, zip_name):
-                        with open(zip_name, "rb") as f:
-                            st.download_button(
-                                label="📦 DOWNLOAD ALL RESULTS (ZIP)",
-                                data=f,
-                                file_name=zip_name,
-                                mime="application/zip"
-                            )
+                    shutil.make_archive(zip_name.replace('.zip', ''), 'zip', "data/processed")
+                    with open(zip_name, "rb") as f:
+                        st.download_button("📦 DOWNLOAD ALL RESULTS (ZIP)", f, file_name=zip_name)
                 except Exception as e:
                     st.error(f"Engine Error: {e}")
