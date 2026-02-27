@@ -1,25 +1,13 @@
-# BioBeat Pipeline Master Controller - Absolute Pathing Fix
+# BioBeat Universal Makefile
 ROOT_DIR := $(shell pwd)
 PYTHON = $(ROOT_DIR)/.venv/bin/python3
-PIP = $(ROOT_DIR)/.venv/bin/pip3
 
-.PHONY: build clean run test install
-
-install:
-	$(PIP) install -r requirements.txt
+.PHONY: build run_sandbox
 
 build:
 	cd src/cpp_engine && $(PYTHON) setup.py build_ext --inplace
 
-clean:
-	rm -rf data/processed/visualizations/*
-	rm -rf data/processed/submissions/*
-	rm -rf src/cpp_engine/build
-	find . -name "*.so" -delete
-
-run:
-	$(PYTHON) src/python_scripts/run_preprocessing.py
-	$(PYTHON) src/python_scripts/main_full_run.py
-
-test:
-	$(PYTHON) -m pytest tests/python_tests/
+# Run the pipeline against a specific sandbox directory
+run_sandbox:
+	$(PYTHON) src/python_scripts/run_preprocessing.py --data_dir $(DATA)
+	$(PYTHON) src/python_scripts/main_full_run.py --data_dir $(DATA) --target $(TARGET)
