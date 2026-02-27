@@ -2,10 +2,21 @@ import streamlit as st
 import os
 import uuid
 import subprocess
+import shutil
 from file_io.header_parser import detect_target_column
 from file_io.schema_check import validate_schemas
 
-# Page Branding
+def create_zip_archive(workspace_path, output_zip):
+    """
+    Creates a ZIP archive of the results.
+    Includes the report, submissions, and visualizations.
+    """
+    results_path = os.path.join(workspace_path, "processed")
+    if os.path.exists(results_path):
+        shutil.make_archive(output_zip.replace('.zip', ''), 'zip', results_path)
+        return True
+    return False
+
 st.set_page_config(page_title="Vector | Direction for your data...", layout="wide")
 
 st.markdown("<h1 style='text-align: center; color: #38bdf8;'>Vector</h1>", unsafe_allow_html=True)
@@ -17,8 +28,8 @@ if 'session_id' not in st.session_state:
 
 workspace = f"workspaces/session_{st.session_state.session_id}"
 os.makedirs(f"{workspace}/raw", exist_ok=True)
+os.makedirs(f"{workspace}/processed", exist_ok=True)
 
-# THE DROP ZONE
 st.write("### 📥 Load Data")
 uploaded_files = st.file_uploader(
     "Drag and Drop 1-3 Files (Train, Test, Sample)", 
@@ -27,39 +38,38 @@ uploaded_files = st.file_uploader(
 )
 
 if uploaded_files:
-    st.write("---")
-    st.write("#### 🛰️ Files Detected in Console:")
-    
-    # Display file names and handle storage
     for uploaded_file in uploaded_files:
-        st.info(f"📄 **File:** {uploaded_file.name} | **Size:** {uploaded_file.size / 1024:.2f} KB")
-        
-        # Save to sandbox
         file_path = os.path.join(workspace, "raw", uploaded_file.name)
         with open(file_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
 
-    # Automated logic to identify which file is which
     train_file = next((f for f in uploaded_files if "train" in f.name.lower()), None)
     test_file = next((f for f in uploaded_files if "test" in f.name.lower()), None)
 
     if train_file and test_file:
         train_path = os.path.join(workspace, "raw", train_file.name)
         test_path = os.path.join(workspace, "raw", test_file.name)
-        
         target = detect_target_column(train_path)
-        is_valid, message = validate_schemas(train_path, test_path, target)
-
-        if is_valid:
-            st.success(f"✅ Schema Verified for {target}. Direction set.")
-            if st.button("🚀 EXECUTE VECTOR GAUNTLET"):
-                with st.spinner("Processing Hybrid C++ & 11-Model Ensemble..."):
-                    # Execute Pipeline...
-                    st.write("Running...")
-        else:
-            st.error(f"⚠️ {message}")
-    elif len(uploaded_files) > 0:
-        st.warning("Please ensure you have uploaded both a 'train' and 'test' file to begin.")
-
-st.markdown("---")
-st.caption("Vector Hybrid Engine | Secure Sandbox Mode")
+        
+        if st.button("🚀 EXECUTE VECTOR GAUNTLET"):
+            with st.spinner("Processing..."):
+                try:
+                    # Run the pipeline using the workspace paths
+                    subprocess.run(["make", "build"], check=True)
+                    subprocess.run(["python3", "src/python_scripts/run_preprocessing.py"], check=True)
+                    subprocess.run(["python3", "src/python_scripts/main_full_run.py"], check=True)
+                    
+                    st.success("✅ Analysis Complete.")
+                    
+                    # Create and provide the Download All button
+                    zip_name = f"Vector_Results_{st.session_state.session_id}.zip"
+                    if create_zip_archive(workspace, zip_name):
+                        with open(zip_name, "rb") as f:
+                            st.download_button(
+                                label="📦 DOWNLOAD ALL RESULTS (ZIP)",
+                                data=f,
+                                file_name=zip_name,
+                                mime="application/zip"
+                            )
+                except Exception as e:
+                    st.error(f"Engine Error: {e}")

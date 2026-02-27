@@ -1,3 +1,4 @@
+import sys, os; sys.path.append(os.path.join(os.getcwd(), 'src/cpp_engine'))
 import os
 import sys
 import pandas as pd
