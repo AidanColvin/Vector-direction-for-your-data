@@ -2,35 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BioBeat: Smoker Status Prediction</title>
+    <title>BioBeat Engine | Aidan Colvin</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; margin: 0; display: flex; flex-direction: column; align-items: center; }
-        .header { background: #276DC3; color: white; width: 100%; padding: 40px 0; text-align: center; border-bottom: 5px solid #1a4a85; }
-        .container { background: white; width: 80%; max-width: 800px; margin-top: -30px; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .drop-zone { border: 2px dashed #276DC3; border-radius: 20px; padding: 60px; text-align: center; color: #555; transition: 0.3s; cursor: pointer; }
-        .drop-zone:hover { background: #eef4ff; border-color: #1a4a85; }
-        .btn-go { background: #28a745; color: white; border: none; padding: 15px 40px; font-size: 18px; border-radius: 50px; cursor: pointer; margin-top: 20px; width: 100%; transition: 0.2s; }
-        .btn-go:hover { background: #218838; transform: scale(1.02); }
-        .footer { margin-top: 40px; font-size: 12px; color: #888; }
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; text-align: center; padding: 50px; }
+        .card { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 600px; margin: auto; }
+        .drop-box { border: 2px dashed #276DC3; border-radius: 15px; padding: 40px; margin: 20px 0; cursor: pointer; }
+        .btn-go { background: #28a745; color: white; padding: 15px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; }
+        .btn-go:hover { background: #218838; }
     </style>
 </head>
 <body>
-    <div class="header">
+    <div class="card">
         <h1>BioBeat Engine</h1>
         <p>Hybrid C++ / Python / R Supervised ML Pipeline</p>
-    </div>
-    <div class="container">
-        <h3>Upload Competition Data</h3>
-        <p>Drag and drop <strong>train.csv</strong>, <strong>test.csv</strong>, and <strong>sample_submission.csv</strong> below.</p>
-        <div class="drop-zone" onclick="window.location.href='https://share.streamlit.io/'">
-            <p>Click to open the BioBeat Execution Environment</p>
-            <p style="font-size: 0.8em;">(Requires Python Backend to Run 11-Model Gauntlet)</p>
+        <div class="drop-box" onclick="window.location.href='https://biobeat-smoker-prediction.streamlit.app'">
+            <p>Drag & Drop Competition Files Here</p>
+            <p style="font-size: 0.8em; color: #666;">(Will open the Python execution environment)</p>
         </div>
-        <button class="btn-go">🚀 RUN PIPELINE</button>
-        <hr style="margin-top: 40px; border: 0; border-top: 1px solid #eee;">
-        <p><strong>Available Modules:</strong> XGBoost, Random Forest, TabNet, FT-Transformer, Deep MLP, and more.</p>
+        <a href="https://biobeat-smoker-prediction.streamlit.app" class="btn-go">🚀 LAUNCH APP</a>
     </div>
-    <div class="footer">Built by Aidan Colvin | Powered by C++ Scaling Engine</div>
 </body>
 </html>
