@@ -1,320 +1,272 @@
-To elevate your repository to a FAANG-standard engineering specification, this documentation provides a transparent look into the low-level data flows, mathematical optimizations, and architectural trade-offs that define the Vector engine.
+# Vector: High-Performance Bio-Signal Analytical Engine
 
-Run the commands in this repository to build the native core, execute the full model gauntlet, and generate publication-grade outputs.
-
----
-
-# 🛰️ Vector: High-Performance Bio-Signal Analytical Engine
-### State-of-the-Art Hybrid Infrastructure for Physiological Data Science
-
-Vector is a polyglot machine learning system engineered for high-fidelity tabular and bio-signal prediction. It combines a C++ numerical core, a multi-model Python ensemble, and R-based statistical reporting to deliver deterministic, high-performance pipelines.
+![C++](https://img.shields.io/badge/C++-Core-blue)
+![Python](https://img.shields.io/badge/Python-Orchestration-yellow)
+![R](https://img.shields.io/badge/R-Analytics-lightblue)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 ---
 
-# I. System Overview (End-to-End Execution Path)
+## Summary
 
-Vector is not a model. It is a staged execution system:
+Vector is a complete, end-to-end hybrid machine learning system designed for high-performance tabular and bio-signal prediction. It integrates a C++ numerical engine for low-level data processing, a Python-based multi-model ensemble for predictive modeling, and an R analytics layer for statistical visualization.
+
+The system covers the full pipeline:
+
+- Data validation and schema enforcement  
+- High-performance preprocessing (scaling, clipping, imputation)  
+- Multi-model training across 11 architectures  
+- Cross-model evaluation and comparison  
+- Quadratic-weighted ensemble prediction  
+- Publication-grade reporting outputs  
+
+Vector is built to ensure deterministic execution, scalability, and reproducibility across large, high-dimensional datasets.
+
+---
+
+## Table of Contents
+
+- [I. System Overview](#i-system-overview)
+- [II. Architecture](#ii-architecture)
+- [III. C++ Numerical Core](#iii-c-numerical-core)
+- [IV. Python Model Orchestration](#iv-python-model-orchestration)
+- [V. Ensemble Strategy](#v-ensemble-strategy)
+- [VI. Schema Validation](#vi-schema-validation)
+- [VII. Session Isolation](#vii-session-isolation)
+- [VIII. R Statistical Layer](#viii-r-statistical-layer)
+- [IX. Performance Benchmarks](#ix-performance-benchmarks)
+- [X. Failure Modes](#x-failure-modes)
+- [XI. Trade-offs](#xi-trade-offs)
+- [XII. Reproducibility](#xii-reproducibility)
+- [XIII. Execution](#xiii-execution)
+- [XIV. Repository Structure](#xiv-repository-structure)
+- [XV. Nuts and Bolts Deep Dive](#xv-nuts-and-bolts-deep-dive)
+- [XVI. Summary](#xvi-summary)
+
+---
+
+## I. System Overview
+
+Vector is a staged execution system:
 
 INPUT → VALIDATION → C++ ENGINE → FEATURE MATRIX → MODEL GAUNTLET → ENSEMBLE → REPORTS
 
 Execution guarantees:
-- Deterministic outputs
-- No data leakage
-- Reproducible runs
-- Strict schema enforcement
+- Deterministic outputs  
+- No data leakage  
+- Reproducible runs  
+- Strict schema enforcement  
 
 ---
 
-# II. Architectural Philosophy
+## II. Architecture
 
-Vector uses a decoupled three-tier architecture:
+Vector uses a decoupled three-tier system:
 
-- C++ → computation
-- Python → orchestration
-- R → statistical output
-
-This separation ensures:
-- Performance isolation
-- Independent scaling
-- Minimal cross-layer dependencies
+- C++ → computation  
+- Python → orchestration  
+- R → statistical output  
 
 ---
 
-# III. C++ Numerical Core (Performance Layer)
+## III. C++ Numerical Core
 
-## 3.1 Why C++ Exists
+### Why C++
 
-Python limitations:
-- GIL prevents parallel CPU usage
-- DataFrame operations create hidden copies
-- Dynamic typing adds overhead
-
-C++ solves:
-- Memory locality
-- Loop optimization (O3)
-- Deterministic execution
+- Eliminates GIL bottlenecks  
+- Avoids DataFrame copies  
+- Enables O3-optimized loops  
 
 ---
 
-## 3.2 Core Operations
+### Core Operations
 
-### Z-Score Normalization
-z = (x - mean) / std
+**Z-Score Normalization**
 
-Implementation:
-- Two-pass algorithm
-- In-place transformation
-- No intermediate allocations
+z = (x - mean) / std  
 
----
+**Outlier Clipping**
 
-### Outlier Clipping
-x = min(max(x, q1), q99)
+x = min(max(x, q1), q99)  
 
-Purpose:
-- Prevent variance distortion
-- Stabilize downstream gradients
+**Median Imputation**
+
+- Robust to skew  
+- Deterministic  
 
 ---
 
-### Median Imputation
-- Robust against skew
-- Deterministic
-- No learned parameters
+### Memory Model
 
----
-
-## 3.3 Memory Model
-
-Vector avoids pandas overhead:
-
-- Zero-copy buffers via pybind11
-- Contiguous memory arrays
-- No serialization between stages
+- Zero-copy buffers via pybind11  
+- Contiguous memory layout  
+- No serialization overhead  
 
 Impact:
-- ~60% lower RAM usage
-- Faster cache access
-- Reduced GC pressure
+- ~60% lower RAM usage  
+- Faster execution  
 
 ---
 
-# IV. Python Model Orchestration
+## IV. Python Model Orchestration
 
-## 4.1 Model Classes
+### Model Classes
 
 Tree-Based:
-- XGBoost
-- Random Forest
-- Gradient Boosting
-- Extra Trees
+- XGBoost  
+- Random Forest  
+- Gradient Boosting  
+- Extra Trees  
 
 Linear:
-- Logistic Regression
-- Ridge
+- Logistic Regression  
+- Ridge  
 
 Kernel:
-- SVM (RBF)
+- SVM  
 
 Probabilistic:
-- Naive Bayes
+- Naive Bayes  
 
 Deep Learning:
-- PyTorch MLP
-- TabNet
-- FT-Transformer
+- PyTorch MLP  
+- TabNet  
+- FT-Transformer  
 
 ---
 
-## 4.2 Training Loop
+### Training Loop
 
-Each model is isolated:
+Each model is trained independently:
 
 for model in models:
     fit(train)
     predict(valid)
     compute metrics
 
-No shared weights  
-No cross-model contamination  
+---
+
+## V. Ensemble Strategy
+
+**Weight Function**
+
+w = (AUC - 0.5)^2  
+
+**Final Prediction**
+
+P = Σ(w * prediction) / Σ(w)  
 
 ---
 
-## 4.3 Metric Layer
+## VI. Schema Validation
 
-Computed on identical split:
-- Accuracy
-- F1
-- ROC-AUC
-
-Guarantee:
-Fair model comparison
+- Column parity enforced  
+- Type validation  
+- Hard failure on mismatch  
 
 ---
 
-# V. Ensemble System (Core Innovation)
+## VII. Session Isolation
 
-## 5.1 Weight Function
+workspaces/session_UUID/
 
-w = (AUC - 0.5)^2
-
----
-
-## 5.2 Final Prediction
-
-P_final = sum(w_i * P_i) / sum(w_i)
+- No persistence  
+- Automatic cleanup  
 
 ---
 
-## 5.3 Why This Works
+## VIII. R Statistical Layer
 
-- Suppresses weak models
-- Amplifies strong predictors
-- Stabilizes predictions
+- ROC curves  
+- Confusion matrices  
+- Correlation heatmaps  
 
----
-
-# VI. Schema Validation Layer
-
-Before execution:
-
-- Column parity enforced
-- Type validation
-- Missing features → hard failure
-
-Guarantee:
-No silent bugs
+Generated with ggplot2.
 
 ---
 
-# VII. Session Isolation
+## IX. Performance Benchmarks
 
-Each run creates:
+Dataset: 2.5M rows  
 
-workspaces/session_<UUID>/
+- Python: ~4.1s  
+- C++: ~0.28s  
 
-After execution:
-- Deleted automatically
-
-Guarantee:
-- No persistence
-- No leakage
-- Clean reproducibility
+Speedup: ~14×  
 
 ---
 
-# VIII. R Statistical Layer
+## X. Failure Modes
 
-Generates:
-- ROC curves
-- Confusion matrices
-- Correlation heatmaps
+Vector stops execution if:
 
-Uses:
-ggplot2 for publication-grade visuals
-
----
-
-# IX. Performance Benchmarks
-
-Dataset: 2.5M rows
-
-Scaling:
-- Python: ~4.1s
-- C++: ~0.28s
-
-Speedup:
-~14× faster
-
-Memory:
-~60% reduction vs pandas
+- Schema mismatch  
+- Missing columns  
+- Invalid types  
+- High NaN density  
 
 ---
 
-# X. Failure Modes (Critical)
+## XI. Trade-offs
 
-Vector will fail intentionally when:
-
-- Train/test mismatch
-- Missing required columns
-- Non-numeric scaling inputs
-- Extreme NaN density
-
-This is by design.
+- C++ chosen for performance  
+- Ensemble chosen for stability  
+- Deep learning limited due to overfitting risk  
 
 ---
 
-# XI. Trade-offs
+## XII. Reproducibility
 
-Why not pure Python:
-Too slow
-
-Why not single model:
-Unstable
-
-Why not deep learning only:
-Overfitting risk
-
-Why ensemble:
-Captures multiple data structures
+- Fixed seeds  
+- Deterministic preprocessing  
+- Identical splits  
 
 ---
 
-# XII. Reproducibility Guarantees
-
-- Fixed seeds
-- Deterministic preprocessing
-- Identical splits
-- No stochastic pipelines
-
----
-
-# XIII. Execution
+## XIII. Execution
 
 Build:
-make build
+make build  
 
 Run:
-make run
+make run  
 
 Test:
-make test
+make test  
 
 ---
 
-# XIV. Repository Structure
+## XIV. Repository Structure
 
-├── src/
-│   ├── cpp_engine/
-│   ├── python_scripts/
-│   ├── training/
-│   ├── evaluation/
-│   └── utils/
-├── data/
-├── workspaces/
-├── reports/
-├── requirements.txt
-└── app.py
+├── src/  
+├── data/  
+├── workspaces/  
+├── reports/  
+├── requirements.txt  
+└── app.py  
 
 ---
 
-# XV. Nuts and Bolts Deep Dive
+## XV. Nuts and Bolts Deep Dive
 
-- The Foundation (C++): Vector builds a native binary to run scaling, clipping, and imputation without Python interpreter overhead. O3 optimization and cache-friendly loops enable high-throughput preprocessing on millions of rows.
-- The Intelligence (Python): Vector trains 11 distinct model families to cover different decision geometries. Quadratic weighting ensures strong models dominate while weak models contribute near-zero influence.
-- The Visuals (R): ggplot2 outputs are designed to be publication-grade (ROC curves, confusion matrices, correlation heatmaps) so results can be communicated in peer-reviewed formats.
+- C++ processes raw numerical data at the memory level using optimized loops  
+- Python evaluates multiple hypothesis classes instead of relying on a single model  
+- Quadratic weighting ensures high-performing models dominate ensemble output  
+- R produces statistically rigorous visualizations suitable for publication  
 
 ---
 
-# XVI. Summary
+## XVI. Summary
 
 Vector is a system that:
-- Optimizes numerical computation
-- Evaluates multiple hypotheses
-- Selects signal over noise
-- Produces stable predictions
+
+- Optimizes computation  
+- Evaluates multiple models  
+- Selects signal over noise  
+- Produces stable predictions  
 
 ---
 
 Author: Aidan Colvin  
+License: MIT  
 Status: Production-Ready
