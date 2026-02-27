@@ -22,21 +22,20 @@
         <p class="slogan">Direction for your data...</p>
         
         <div id="drop-zone">
-            <p id="status-text">Drag & Drop 1-3 Files Here<br><span style="font-size: 0.8em; color: #64748b;">(or click to browse)</span></p>
+            <p id="status-text">Drag and Drop 1-3 Files Here<br><span style="font-size: 0.8em; color: #64748b;">(or click to browse)</span></p>
         </div>
 
-        <a href="https://vector-direction.streamlit.app" class="btn-go">🚀 RUN ENGINE</a>
+        <a href="https://vector-direction-for-your-data.streamlit.app" class="btn-go">RUN ENGINE</a>
     </div>
 
     <script>
         const dropZone = document.getElementById('drop-zone');
         const statusText = document.getElementById('status-text');
 
-        // 1. GLOBAL TRAP: Prevents Firefox from opening files anywhere on the page
+        // Force browser to ignore default file handling
         window.addEventListener("dragover", function(e) { e.preventDefault(); }, false);
         window.addEventListener("drop", function(e) { e.preventDefault(); }, false);
 
-        // 2. DROP ZONE LOGIC
         ['dragenter', 'dragover'].forEach(name => {
             dropZone.addEventListener(name, (e) => {
                 e.preventDefault();
@@ -56,15 +55,16 @@
         dropZone.addEventListener('drop', (e) => {
             const files = e.dataTransfer.files;
             if (files.length > 0) {
-                statusText.innerHTML = `✅ <strong>${files[0].name}</strong> loaded. Redirecting to Engine...`;
+                statusText.innerHTML = "Success: " + files[0].name + " detected. Redirecting to Engine...";
                 setTimeout(() => {
-                    window.location.href = "https://vector-direction.streamlit.app";
+                    // This URL must match your Streamlit Share URL exactly
+                    window.location.href = "https://vector-direction-for-your-data.streamlit.app";
                 }, 1000);
             }
         });
 
         dropZone.addEventListener('click', () => {
-            window.location.href = "https://vector-direction.streamlit.app";
+            window.location.href = "https://vector-direction-for-your-data.streamlit.app";
         });
     </script>
 </body>
