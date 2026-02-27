@@ -1,18 +1,14 @@
-# Core Processing
 numpy
 pandas
 pyarrow
 pybind11
 setuptools
-
-# Machine Learning
 scikit-learn
 xgboost
 pytorch-tabnet
 torch
 optuna
-
-# Visualization & Front-end
 matplotlib
 seaborn
 streamlit
+pytest
