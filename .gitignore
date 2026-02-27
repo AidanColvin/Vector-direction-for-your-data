@@ -1,0 +1,63 @@
+# data should not be versioned
+data/raw/*.csv
+data/processed/*.csv
+
+# keep small/important artifacts if you want
+!data/processed/submission.csv
+!data/processed/sample_submission.csv
+
+# OS junk
+.DS_Store
+
+# local logs / temp artifacts
+*.log
+.tmp_*
+terminal_fail_log.txt
+run_log.txt
+block*_*.log
+
+# local check logs / scratch
+*.log
+.tmp_*.txt
+.tmp_*.log
+run_log.txt
+terminal_fail_log.txt
+block*_*.log
+
+# data should not be versioned
+data/raw/*.csv
+data/processed/*.csv
+
+# allow small artifacts if you keep them
+!data/processed/submission.csv
+!data/processed/sample_submission.csv
+
+# backups
+*.bak
+*.bak_*
+*.bak_fix*
+*.bak2
+
+# local run artifacts
+artifacts/
+models/*.rds
+
+# model artifacts (too large for GitHub)
+models/
+*.rds
+
+# run logs
+pipeline.log
+# large files
+models/
+*.rds
+*.RData
+data/raw/
+data/processed/train_*.csv
+data/processed/test_*.csv
+data/processed/eda_*.csv
+data/processed/features_*.csv
+pipeline.log
+data/prossed/
+raw files/
+*.csv
