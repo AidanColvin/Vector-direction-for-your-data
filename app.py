@@ -7,7 +7,7 @@ from file_io.schema_check import validate_schemas
 
 st.set_page_config(page_title="BioBeat Universal Engine", layout="wide")
 
-st.title("BioBeat Universal ML Engine")
+st.title("Vector | Direction for your data...")
 st.markdown("---")
 
 if 'session_id' not in st.session_state:

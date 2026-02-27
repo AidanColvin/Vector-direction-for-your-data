@@ -2,24 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BioBeat Engine | Aidan Colvin</title>
+    <title>Vector | Direction for your data</title>
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f8f9fa; text-align: center; padding: 50px; }
-        .card { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 600px; margin: auto; }
-        .drop-box { border: 2px dashed #276DC3; border-radius: 15px; padding: 40px; margin: 20px 0; cursor: pointer; }
-        .btn-go { background: #28a745; color: white; padding: 15px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; }
-        .btn-go:hover { background: #218838; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; color: #f8fafc; text-align: center; padding: 50px; }
+        .card { background: #1e293b; border-radius: 24px; padding: 60px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); max-width: 700px; margin: auto; border: 1px solid #334155; }
+        h1 { font-size: 4rem; margin-bottom: 0; letter-spacing: -2px; color: #38bdf8; }
+        .slogan { font-style: italic; color: #94a3b8; font-size: 1.2rem; margin-bottom: 40px; }
+        .drop-box { border: 2px dashed #38bdf8; border-radius: 16px; padding: 50px; margin: 30px 0; cursor: pointer; transition: all 0.3s; }
+        .drop-box:hover { background: #0ea5e91a; transform: translateY(-5px); }
+        .btn-go { background: #38bdf8; color: #0f172a; padding: 18px 45px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 1.1rem; display: inline-block; transition: 0.2s; }
+        .btn-go:hover { background: #7dd3fc; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>BioBeat Engine</h1>
-        <p>Hybrid C++ / Python / R Supervised ML Pipeline</p>
-        <div class="drop-box" onclick="window.location.href='https://biobeat-smoker-prediction.streamlit.app'">
-            <p>Drag & Drop Competition Files Here</p>
-            <p style="font-size: 0.8em; color: #666;">(Will open the Python execution environment)</p>
+        <h1>Vector</h1>
+        <p class="slogan">Direction for your data...</p>
+        <div class="drop-box" onclick="window.location.href='https://share.streamlit.io/'">
+            <p>Drag & Drop Training/Testing Samples</p>
+            <p style="font-size: 0.85em; color: #64748b;">(Isolated Sandbox Mode Active)</p>
         </div>
-        <a href="https://biobeat-smoker-prediction.streamlit.app" class="btn-go">🚀 LAUNCH APP</a>
+        <a href="https://share.streamlit.io/" class="btn-go">🚀 RUN PIPELINE</a>
     </div>
 </body>
 </html>
