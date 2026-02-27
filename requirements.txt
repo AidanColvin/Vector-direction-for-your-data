@@ -1,14 +1,26 @@
-numpy
-pandas
+# Core Numerical Stack
+numpy==2.4.2
+pandas>=2.2.0,<3.0.0
 pyarrow
+scipy
+scikit-learn
+
+# C++ & System
 pybind11
 setuptools
-scikit-learn
+
+# Machine Learning Gauntlet
 xgboost
 pytorch-tabnet
 torch
 optuna
+
+# Vector Dashboard & Visualization
 matplotlib
 seaborn
-streamlit
+streamlit>=1.31.0
+jinja2
+pygments
+
+# Testing
 pytest
