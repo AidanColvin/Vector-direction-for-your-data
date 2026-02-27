@@ -20,14 +20,14 @@ z_i = (x_i - mean) / std
 
 Ensures:
 - Unit variance
+- Comparable feature scales
 - Stable gradients
-- Feature comparability
 
 ---
 
 ### 2.2 Quadratic Ensemble
 
-P_final = Σ((AUC - 0.5)^2 * P) / Σ((AUC - 0.5)^2)
+P_final = sum((AUC - 0.5)^2 * P) / sum((AUC - 0.5)^2)
 
 Effect:
 - Strong models dominate
@@ -39,8 +39,8 @@ Effect:
 
 Dataset: 2.5M rows
 
-Python: 4.12s  
-C++: 0.28s  
+Python scaling: 4.12s  
+C++ scaling: 0.28s  
 
 Speedup: 14.7×
 
@@ -56,29 +56,32 @@ Speedup: 14.7×
 
 ## 5. Mathematical Appendix
 
-### TabNet Gradient
+### 5.1 TabNet Attention Gradient
 
-M = Sparsemax(hW)
+M[i] = Sparsemax(h * W)
 
-dL/dW = dL/dM * dM/dSparsemax * dSparsemax/dW
-
----
-
-### Gradient Boosting Objective
-
-L ≈ Σ[g_i f(x_i) + 1/2 h_i f^2(x_i)]
+dL/dW = dL/dM × dM/dSparsemax × dSparsemax/dW
 
 ---
 
-### Ensemble Convexity
+### 5.2 Gradient Boosting Objective
 
+L ≈ Σ [g_i f(x_i) + 1/2 h_i f^2(x_i)] + Ω(f)
+
+---
+
+### 5.3 Ensemble Convexity
+
+Weights normalized:
 Σ w = 1
 
-Prediction ∈ [0,1]
+Guarantee:
+Predictions ∈ [0,1]
 
 ---
 
 ## 6. Key Insight
 
 Performance gains come from:
-C++ optimization, not model complexity.
+- Moving computation to C++
+- Not from model complexity
