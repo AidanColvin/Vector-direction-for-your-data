@@ -6,13 +6,14 @@ from evaluation.metrics import get_classification_metrics
 
 def compare_all_models(X: np.ndarray, y: np.ndarray) -> pd.DataFrame:
     """
-    compares 7 supervised models + 2 advanced models (Deep Learning & Pattern Rec)
-    returns a ranked table by AUC accuracy
+    compares 7 supervised models + 4 advanced models (DL, Pattern, TabNet, Transformer)
+    returns a ranked table by AUC and accuracy
     """
     model_modules = [
         "models.xgboost_model", "models.logistic_model", "models.rf_model",
         "models.nb_model", "models.svm_model", "models.gbm_model", "models.linear_model",
-        "models.deep_learning_model", "models.pattern_recognition_model"
+        "models.deep_learning_model", "models.pattern_recognition_model",
+        "models.tabnet_model", "models.transformer_model"
     ]
     
     results = []
