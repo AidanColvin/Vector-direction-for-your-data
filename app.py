@@ -5,7 +5,7 @@ import uuid
 import subprocess
 import shutil
 
-# Critical Path Configuration
+# Critical Path Configuration for Streamlit Cloud
 current_dir = os.path.dirname(os.path.abspath(__file__))
 scripts_path = os.path.join(current_dir, "src", "python_scripts")
 if scripts_path not in sys.path:
