@@ -1,20 +1,15 @@
-run_full_pipeline <- function() {
-  # """
-  # run full pipeline
-  # cleaning -> encoding -> standardization
-  # overwrites processed outputs each run
-  # """
+# BioBeat Pipeline Master Controller
 
-  source("scripts/run_cleaning.R")
-  run_cleaning_pipeline(na_strategy = "drop")
+.PHONY: build clean run
 
-  source("scripts/run_encoding.R")
-  run_encoding_pipeline()
+build:
+	cd src/cpp_engine && python3 setup.py build_ext --inplace
 
-  source("scripts/run_standardization.R")
-  run_standardization_pipeline(exclude = c("id", "diagnosed_diabetes"))
+clean:
+	rm -rf data/processed/visualizations/*
+	rm -rf data/processed/submissions/*
+	rm -rf src/cpp_engine/build
 
-  print("pipeline complete")
-}
-
-run_full_pipeline()
+run:
+	python3 src/python_scripts/run_preprocessing.py
+	python3 src/python_scripts/main_full_run.py
