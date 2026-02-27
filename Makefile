@@ -1,6 +1,7 @@
-# BioBeat Pipeline Master Controller
-PYTHON = ./.venv/bin/python3
-PIP = ./.venv/bin/pip3
+# BioBeat Pipeline Master Controller - Absolute Pathing Fix
+ROOT_DIR := $(shell pwd)
+PYTHON = $(ROOT_DIR)/.venv/bin/python3
+PIP = $(ROOT_DIR)/.venv/bin/pip3
 
 .PHONY: build clean run test install
 
