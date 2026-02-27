@@ -8,12 +8,11 @@
         .card { background: #1e293b; border-radius: 24px; padding: 60px; max-width: 700px; margin: auto; border: 1px solid #334155; }
         h1 { font-size: 4rem; margin-bottom: 0; color: #38bdf8; }
         .slogan { font-style: italic; color: #94a3b8; margin-bottom: 40px; }
-        /* The Active Drop Zone */
         #drop-zone { 
             border: 2px dashed #38bdf8; border-radius: 16px; padding: 60px; 
             margin: 30px 0; cursor: pointer; transition: 0.3s; 
         }
-        #drop-zone.dragover { background: rgba(56, 189, 248, 0.2); transform: scale(1.02); }
+        #drop-zone.dragover { background: rgba(56, 189, 248, 0.2); border-color: #7dd3fc; }
         .btn-go { background: #38bdf8; color: #0f172a; padding: 18px 45px; border-radius: 50px; text-decoration: none; font-weight: bold; }
     </style>
 </head>
@@ -33,32 +32,37 @@
         const dropZone = document.getElementById('drop-zone');
         const statusText = document.getElementById('status-text');
 
-        // Prevent browser from opening the file
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, e => {
+        // 1. GLOBAL TRAP: Prevents Firefox from opening files anywhere on the page
+        window.addEventListener("dragover", function(e) { e.preventDefault(); }, false);
+        window.addEventListener("drop", function(e) { e.preventDefault(); }, false);
+
+        // 2. DROP ZONE LOGIC
+        ['dragenter', 'dragover'].forEach(name => {
+            dropZone.addEventListener(name, (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-            }, false);
+                dropZone.classList.add('dragover');
+            });
         });
 
-        // Visual feedback
-        dropZone.addEventListener('dragover', () => dropZone.classList.add('dragover'));
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        ['dragleave', 'drop'].forEach(name => {
+            dropZone.addEventListener(name, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('dragover');
+            });
+        });
 
-        // Handle the drop
         dropZone.addEventListener('drop', (e) => {
-            dropZone.classList.remove('dragover');
             const files = e.dataTransfer.files;
             if (files.length > 0) {
-                statusText.innerHTML = `✅ ${files.length} File(s) Loaded: <br><strong>${files[0].name}</strong>`;
-                // Redirect to the engine after a brief delay
+                statusText.innerHTML = `✅ <strong>${files[0].name}</strong> loaded. Redirecting to Engine...`;
                 setTimeout(() => {
                     window.location.href = "https://vector-direction.streamlit.app";
-                }, 1500);
+                }, 1000);
             }
         });
 
-        // Clicking to browse
         dropZone.addEventListener('click', () => {
             window.location.href = "https://vector-direction.streamlit.app";
         });
