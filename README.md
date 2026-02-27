@@ -1,388 +1,164 @@
-# Vector: High-Performance Tabular Machine Learning Engine
-### Direction for Your Data
+# 🛰️ Vector: High-Performance Bio-Signal Analytical Engine
+### State-of-the-Art Hybrid Infrastructure for Physiological Data Science
 
-Vector is a hybrid C++ / Python / R machine learning system designed to solve performance, stability, and reproducibility challenges in tabular prediction pipelines. It achieves this by separating numerical computation, model orchestration, and statistical reporting into distinct execution layers.
-
-The system is optimized for:
-- Large-scale tabular datasets (10K → millions of rows)
-- High-dimensional feature spaces
-- Deterministic, reproducible ML pipelines
-- Low-latency preprocessing and scaling
+Vector is an enterprise-grade, polyglot machine learning framework engineered for high-fidelity classification of bio-signals and tabular data. It solves the Unit-Variance Problem and High-Dimensional Noise through a hybrid C++ / Python / R architecture.
 
 ---
 
-# I. System Architecture (End-to-End Data Flow)
+## I. System Execution Flow (Critical)
 
-Vector operates as a staged pipeline where data flows through strictly defined transformations:
+RAW DATA → SCHEMA VALIDATION → C++ ENGINE → FEATURE MATRIX → MODEL GAUNTLET → ENSEMBLE → REPORTS
 
-RAW CSV → C++ ENGINE → VALIDATED MATRIX → MODEL GAUNTLET → WEIGHTED ENSEMBLE → REPORTS
-
-### Step-by-step execution:
-
-1. Input ingestion (CSV / TSV)
-2. Schema validation (column parity + types)
-3. C++ preprocessing (scaling, clipping, imputation)
-4. Conversion → NumPy / PyArrow table
-5. Parallel model training (11 models)
-6. Metric evaluation (AUC, F1, accuracy)
-7. Quadratic-weighted ensemble
-8. Prediction generation
-9. R-based visualization + HTML report output
+Each stage is deterministic and isolated.
 
 ---
 
-# II. C++ Numerical Core (Performance Layer)
+## II. Architectural Philosophy & Design Patterns
 
-The C++ engine is responsible for all operations that are:
-- Row-wise
-- Column-wise
-- Memory intensive
-- Repeated across features
+Vector employs a Decoupled Three-Tier Architecture.
 
-### Why C++ instead of Python:
+### Tier 1: C++ Numerical Foundation
 
-Python bottlenecks:
-- Dynamic typing overhead
-- GIL (Global Interpreter Lock)
-- DataFrame copy operations
-- Object-based arithmetic
+- In-place z-score normalization  
+- O3 optimized loops  
+- Zero-copy memory via pybind11  
+- Median imputation + outlier clipping  
 
-C++ advantages:
-- Static typing
-- CPU-level loop optimization
-- Cache-friendly memory access
-- No interpreter overhead
-
----
-
-## 2.1 Z-Score Standardization (Core Operation)
-
-Each feature is transformed using:
+Core equation:
 
 z = (x - mean) / std
 
-Implementation details:
-- Single-pass mean calculation
-- Second-pass variance computation
-- In-place transformation (no extra allocation)
-- Double precision (float64)
-
-Time complexity: O(n × d)  
-Memory overhead: O(1) per column
+Performance:
+- ~14x faster than pandas scaling
+- ~60% lower memory usage
 
 ---
 
-## 2.2 Outlier Handling
+### Tier 2: Python Orchestration (11-Model Gauntlet)
 
-Before scaling:
+Model classes:
 
-- Hard clipping at configurable quantiles
-- Prevents extreme values from dominating variance
-
-Example:
-x = min(max(x, q1), q99)
-
----
-
-## 2.3 Median Imputation
-
-Missing values are filled using:
-
-median(column)
-
-Why median:
-- Robust to skewed distributions
-- Stable under outliers
-- Deterministic
-
----
-
-## 2.4 Memory Strategy
-
-Vector avoids DataFrame copies by:
-
-- Passing raw buffers via pybind11
-- Operating on contiguous arrays
-- Avoiding serialization (no CSV re-write mid-pipeline)
-
-Result:
-- ~60% lower memory usage vs pandas pipelines
-- Significant reduction in GC overhead
-
----
-
-# III. Python Orchestration Layer (Model Engine)
-
-Python acts as the control plane:
-
-Responsibilities:
-- Model initialization
-- Training loops
-- Hyperparameter control
-- Metric tracking
-- Ensemble coordination
-
----
-
-## 3.1 Model Gauntlet (11 Models)
-
-Vector does not rely on a single estimator.
-
-Instead, it evaluates multiple hypothesis classes:
-
-### Tree-Based Models
+Tree-Based:
+- XGBoost
+- LightGBM
 - Random Forest
 - Extra Trees
-- Gradient Boosting
-- XGBoost
 
-Strength:
-- Captures non-linear interactions
-- Handles mixed feature types well
-
----
-
-### Linear / Statistical Models
+Linear:
 - Logistic Regression
-- Ridge Classifier
+- Ridge
+
+Kernel:
+- SVM
+
+Probabilistic:
 - Naive Bayes
 
-Strength:
-- Fast
-- Interpretable
-- Low variance baseline
-
----
-
-### Kernel Methods
-- Support Vector Machine (RBF)
-
-Strength:
-- High-dimensional separation
-- Robust decision boundaries
-
----
-
-### Deep Learning Models
+Deep Learning:
 - PyTorch MLP
 - TabNet
 - FT-Transformer
 
-Strength:
-- Feature representation learning
-- Captures complex dependencies
+Each model is trained independently with identical splits.
 
 ---
 
-## 3.2 Training Strategy
-
-Each model is trained independently:
-
-for model in models:
-    fit(train)
-    predict(valid)
-    compute metrics
-
-No shared weights  
-No leakage between models  
-
----
-
-## 3.3 Metric Computation
-
-Primary metrics:
-- Accuracy
-- F1 Score
-- ROC-AUC
-
-All metrics computed on:
-- Holdout validation set
-- Identical split across models
-
----
-
-# IV. Ensemble Strategy (Core Innovation)
-
-Vector does not use simple averaging.
-
-Instead, it applies quadratic weighting based on model performance.
-
----
-
-## 4.1 Weight Function
-
-For each model:
-
-w = (AUC - 0.5)^2
-
-Interpretation:
-- Models near random (0.5) → weight ≈ 0
-- Strong models → exponentially higher influence
-
----
-
-## 4.2 Final Prediction
-
-P_final = sum(w_i * P_i) / sum(w_i)
-
-Where:
-- P_i = prediction from model i
-- w_i = weight from AUC
-
----
-
-## 4.3 Why Quadratic Weighting Works
-
-- Suppresses weak models automatically
-- Prevents noisy learners from degrading ensemble
-- Amplifies high-signal predictors
-
-Example:
-
-Model A (0.90 AUC) → weight = 0.16  
-Model B (0.60 AUC) → weight = 0.01  
-
-Model A has 16× influence
-
----
-
-# V. Schema Validation (Reliability Layer)
-
-Before execution:
-
-- Train/test column parity enforced
-- Type consistency checked
-- Missing columns → hard failure
-
-Guarantee:
-No silent feature mismatch
-
----
-
-# VI. Session Isolation (Data Safety)
-
-Each run creates:
-
-workspaces/session_<UUID>/
-
-Contains:
-- Processed data
-- Model artifacts
-- Outputs
-
-After execution:
-- Directory is deleted
-
-Result:
-- No data leakage
-- Reproducible runs
-- Stateless system design
-
----
-
-# VII. R Visualization Layer (Reporting)
-
-R is used for:
+### Tier 3: R Statistical Analytics
 
 - ROC curves
 - Confusion matrices
-- Feature importance plots
-- Publication-grade figures
+- Correlation heatmaps
 
-Why R:
-- Superior statistical plotting
-- ggplot2 precision
-- Journal-standard formatting
+Powered by ggplot2 for publication-grade output.
 
 ---
 
-# VIII. Repository Structure
+## III. Ensemble Strategy (Core Innovation)
 
-├── src/
-│   ├── cpp_engine/
-│   ├── models/
-│   ├── training/
-│   ├── evaluation/
-│   └── utils/
-├── data/
-│   ├── raw/
-│   └── processed/
-├── workspaces/
-├── reports/
-├── requirements.txt
-├── packages.txt
-└── app.py
+Weight function:
+
+w = (AUC - 0.5)^2
+
+Final prediction:
+
+P = Σ(w * prediction) / Σ(w)
+
+Effect:
+- Weak models suppressed
+- Strong models dominate
 
 ---
 
-# IX. Performance Benchmarks
+## IV. Schema Validation
+
+- Column parity enforced
+- Type consistency required
+- Failure on mismatch
+
+No silent bugs.
+
+---
+
+## V. Session Isolation
+
+workspaces/session_UUID/
+
+- No persistence
+- Auto cleanup
+- Fully reproducible runs
+
+---
+
+## VI. Performance Benchmarks
 
 Dataset: 2.5M rows
 
-Scaling:
-- Python: ~4.1s
-- C++: ~0.28s
+Python scaling: ~4.1s  
+C++ scaling: ~0.28s  
 
-Speedup:
-~14× faster
-
-Memory:
-- ~60% reduction vs pandas pipeline
+Speedup: ~14x  
 
 ---
 
-# X. Trade-offs and Engineering Decisions
+## VII. Failure Modes (Intentional)
 
-### Why not pure Python:
-Too slow at scale
-
-### Why not pure deep learning:
-Overfits small tabular datasets
-
-### Why ensemble:
-Captures multiple data geometries
-
-### Why C++ preprocessing:
-Removes bottleneck before ML stage
+Vector stops execution if:
+- Schema mismatch
+- Missing columns
+- High NaN density
+- Invalid data types
 
 ---
 
-# XI. Execution
+## VIII. Trade-offs
 
-Build:
-make build
+Why C++:
+Performance
 
-Run:
-make run
+Why ensemble:
+Stability
 
-Test:
-make test
-
----
-
-# XII. Design Principles
-
-- Deterministic over stochastic
-- Performance over abstraction
-- Explicit over implicit
-- Modular over monolithic
+Why not deep learning only:
+Overfitting risk
 
 ---
 
-# XIII. Summary
+## IX. Execution
 
-Vector is not a single model.
+make build  
+make run  
+make test  
 
-It is a system that:
-- Cleans data efficiently
+---
+
+## X. Summary
+
+Vector is a system that:
+- Optimizes computation
 - Evaluates multiple hypotheses
-- Selects signal over noise
 - Produces stable predictions
-
-This architecture ensures performance, interpretability, and reproducibility in real-world tabular machine learning.
 
 ---
 
 Author: Aidan Colvin  
-Status: Production-Ready System
-
+Status: Production Ready
