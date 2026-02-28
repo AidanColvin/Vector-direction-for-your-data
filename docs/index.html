@@ -1,1 +1,410 @@
-PASTE_THE_EXACT_HTML_YOU_POSTED_HERE
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vector — Model Picker UI</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#F5F1E8;font-family:"Courier New", monospace;padding:2rem;color:#000}
+    .container{max-width:1200px;margin:0 auto}
+    header{
+      text-align:center;margin-bottom:2rem;border:8px solid #000;background:#fff;padding:2rem
+    }
+    h1{font-size:3rem;font-weight:900;margin-bottom:.5rem}
+    .subtitle{font-size:1.1rem;font-weight:700;letter-spacing:1px}
+
+    .shell{background:#fff;border:8px solid #000;padding:1.5rem}
+    .panel{
+      background:#F5F1E8;border:4px solid #000;border-radius:18px;padding:1.25rem
+    }
+    .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:1.25rem}
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} h1{font-size:2rem} }
+
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{
+      width:46px;height:46px;border:4px solid #000;border-radius:14px;background:#fff;display:grid;place-items:center;overflow:hidden
+    }
+    .brandText .name{font-weight:900;font-size:18px;letter-spacing:-.5px;line-height:1}
+    .brandText .tag{font-size:11px;font-weight:700;opacity:.75;margin-top:4px}
+
+    .pill{
+      border:3px solid #000;border-radius:999px;padding:6px 10px;background:#fff;
+      font-weight:900;font-size:11px;letter-spacing:1px;white-space:nowrap
+    }
+
+    .drop{
+      border:3px dashed #000;border-radius:16px;background:#fff;padding:14px;min-height:160px;
+      display:flex;flex-direction:column;justify-content:center;gap:6px;cursor:pointer
+    }
+    .drop strong{font-size:12px}
+    .drop span{font-size:11px;opacity:.75}
+    .files{
+      margin-top:10px;border:3px solid #000;border-radius:16px;background:#fff;padding:10px;display:grid;gap:8px
+    }
+    .fileRow{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      border:2px solid #000;border-radius:14px;padding:8px 10px;background:#F5F1E8;font-weight:900;font-size:11px
+    }
+    .xbtn{
+      border:2px solid #000;border-radius:999px;background:#fff;font-weight:900;
+      padding:2px 8px;cursor:pointer
+    }
+
+    .sectionTitle{font-weight:900;font-size:14px;letter-spacing:1px;margin-bottom:10px}
+    .desc{font-size:11px;font-weight:700;opacity:.75;line-height:1.4;margin-top:6px}
+
+    .modeRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+    .toggle{
+      display:flex;border:4px solid #000;border-radius:999px;overflow:hidden;background:#fff
+    }
+    .toggle button{
+      border:0;background:transparent;padding:10px 14px;font-weight:900;letter-spacing:1px;
+      cursor:pointer;font-family:inherit;font-size:12px
+    }
+    .toggle button.active{background:#000;color:#F5F1E8}
+
+    .group{
+      border:4px solid #000;border-radius:18px;background:#fff;padding:12px;margin-top:12px
+    }
+    .groupHead{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap
+    }
+    .groupName{font-weight:900;font-size:12px;letter-spacing:1px}
+    .miniActions{display:flex;gap:8px;flex-wrap:wrap}
+    .miniBtn{
+      border:3px solid #000;border-radius:999px;background:#F5F1E8;
+      padding:6px 10px;font-weight:900;font-size:11px;letter-spacing:1px;cursor:pointer
+    }
+    .list{
+      display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px
+    }
+    .opt{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      border:3px solid #000;border-radius:14px;padding:10px;background:#F5F1E8
+    }
+    .opt label{display:flex;align-items:center;gap:10px;font-weight:900;font-size:12px}
+    input[type="checkbox"]{width:18px;height:18px;accent-color:#000;cursor:pointer}
+    .meta{font-size:10px;font-weight:700;opacity:.75;text-align:right}
+
+    .runRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+    .btn{
+      border:4px solid #000;background:#00B4D8;color:#000;font-weight:900;
+      padding:10px 14px;border-radius:999px;cursor:pointer;letter-spacing:1px;font-size:12px
+    }
+    .btn.alt{background:#fff}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+
+    .note{
+      margin-top:12px;border:3px solid #000;border-radius:16px;background:#fff;padding:10px
+    }
+    .note b{font-size:11px}
+    .note p{margin-top:6px;font-size:11px;opacity:.75;line-height:1.4}
+    code{font-family:inherit;font-weight:900}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>VECTOR</h1>
+      <p class="subtitle">UPLOAD + MODEL SELECTION (AUTO OR MANUAL)</p>
+    </header>
+
+    <div class="shell">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div class="brandText">
+            <div class="name">Vector</div>
+            <div class="tag">Direction for your data.</div>
+          </div>
+        </div>
+        <div class="pill" id="statusPill">NO FILES</div>
+      </div>
+
+      <div class="grid">
+        <section class="panel">
+          <div class="sectionTitle">UPLOAD</div>
+
+          <input id="fileInput" type="file" multiple style="display:none" />
+          <div class="drop" id="dropZone" tabindex="0" role="button" aria-label="Upload files">
+            <strong>Drag & drop 1–3 files</strong>
+            <span>CSV / TSV / Parquet • click to browse</span>
+            <span class="desc">Tip: include train + test if you have both.</span>
+          </div>
+
+          <div class="files" id="fileList" style="display:none"></div>
+
+          <div class="runRow">
+            <button class="btn" id="runBtn" disabled>RUN ENGINE</button>
+            <button class="btn alt" id="clearBtn" disabled>CLEAR</button>
+          </div>
+
+          <div class="note">
+            <b>What happens on run</b>
+            <p>
+              Vector validates schema, prepares features, then trains selected models.
+              Results are saved into an isolated session folder.
+            </p>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="sectionTitle">MODEL SELECTION</div>
+
+          <div class="modeRow">
+            <div class="pill">MODE</div>
+            <div class="toggle" role="tablist" aria-label="Mode toggle">
+              <button id="autoBtn" class="active" type="button" aria-selected="true">AUTO</button>
+              <button id="manualBtn" type="button" aria-selected="false">MANUAL</button>
+            </div>
+            <div class="pill" id="selectionCount">0 SELECTED</div>
+          </div>
+
+          <div class="note" id="autoNote">
+            <b>Auto mode</b>
+            <p id="autoText">Upload data to see what Vector recommends.</p>
+          </div>
+
+          <div class="group">
+            <div class="groupHead">
+              <div class="groupName">SUPERVISED (7)</div>
+              <div class="miniActions">
+                <button class="miniBtn" id="supAll" type="button">ALL</button>
+                <button class="miniBtn" id="supNone" type="button">NONE</button>
+              </div>
+            </div>
+            <div class="list" id="supList"></div>
+          </div>
+
+          <div class="group">
+            <div class="groupHead">
+              <div class="groupName">DEEP LEARNING</div>
+              <div class="miniActions">
+                <button class="miniBtn" id="dlAll" type="button">ALL</button>
+                <button class="miniBtn" id="dlNone" type="button">NONE</button>
+              </div>
+            </div>
+            <div class="list" id="dlList"></div>
+          </div>
+
+          <div class="note">
+            <b>Selection output</b>
+            <p>On run, the UI would send: <code>{ mode: "auto|manual", models: [...] }</code></p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const supervisedModels = [
+      { id:"logreg", name:"Logistic Regression", meta:"fast, strong baseline" },
+      { id:"svm",    name:"SVM",                meta:"solid linear/nonlinear" },
+      { id:"rf",     name:"Random Forest",      meta:"robust, low tuning" },
+      { id:"gbm",    name:"Gradient Boosting",  meta:"strong general tabular" },
+      { id:"xgb",    name:"XGBoost",            meta:"high performance" },
+      { id:"ridge",  name:"Ridge",              meta:"stable linear" },
+      { id:"nb",     name:"Naive Bayes",        meta:"fast, simple" }
+    ];
+
+    const deepModels = [
+      { id:"mlp",   name:"PyTorch MLP",        meta:"dense tabular" },
+      { id:"tabnet",name:"TabNet",             meta:"interpretable attention" },
+      { id:"ftt",   name:"FT-Transformer",     meta:"transformer tabular" }
+    ];
+
+    let mode = "auto";
+    let selected = new Set();
+    let files = [];
+
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("fileInput");
+    const fileList = document.getElementById("fileList");
+    const statusPill = document.getElementById("statusPill");
+    const selectionCount = document.getElementById("selectionCount");
+    const runBtn = document.getElementById("runBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    const autoBtn = document.getElementById("autoBtn");
+    const manualBtn = document.getElementById("manualBtn");
+    const autoNote = document.getElementById("autoNote");
+    const autoText = document.getElementById("autoText");
+
+    const supList = document.getElementById("supList");
+    const dlList = document.getElementById("dlList");
+
+    document.getElementById("supAll").onclick = () => selectGroup(supervisedModels, true);
+    document.getElementById("supNone").onclick = () => selectGroup(supervisedModels, false);
+    document.getElementById("dlAll").onclick = () => selectGroup(deepModels, true);
+    document.getElementById("dlNone").onclick = () => selectGroup(deepModels, false);
+
+    autoBtn.onclick = () => setMode("auto");
+    manualBtn.onclick = () => setMode("manual");
+
+    function renderModelList(container, models) {
+      container.innerHTML = "";
+      models.forEach(m => {
+        const row = document.createElement("div");
+        row.className = "opt";
+
+        const left = document.createElement("label");
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = selected.has(m.id);
+
+        cb.addEventListener("change", () => {
+          if (mode !== "manual") return;
+          if (cb.checked) selected.add(m.id);
+          else selected.delete(m.id);
+          syncUI();
+        });
+
+        const name = document.createElement("span");
+        name.textContent = m.name;
+
+        left.appendChild(cb);
+        left.appendChild(name);
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        meta.textContent = m.meta;
+
+        row.appendChild(left);
+        row.appendChild(meta);
+
+        container.appendChild(row);
+      });
+    }
+
+    function selectGroup(models, on) {
+      if (mode !== "manual") return;
+      models.forEach(m => on ? selected.add(m.id) : selected.delete(m.id));
+      syncUI();
+    }
+
+    function setMode(next) {
+      mode = next;
+      autoBtn.classList.toggle("active", mode==="auto");
+      manualBtn.classList.toggle("active", mode==="manual");
+      autoBtn.setAttribute("aria-selected", mode==="auto");
+      manualBtn.setAttribute("aria-selected", mode==="manual");
+
+      if (mode === "auto") autoRecommend();
+      syncUI();
+    }
+
+    function autoRecommend() {
+      selected.clear();
+
+      const names = files.map(f => f.name.toLowerCase());
+      const hasParquet = names.some(n => n.endsWith(".parquet"));
+      const hasBigHint = names.some(n => n.includes("50k") || n.includes("100k") || n.includes("1m") || n.includes("big"));
+
+      ["logreg","rf","xgb","gbm"].forEach(id => selected.add(id));
+      if (!hasBigHint) selected.add("svm");
+      if (hasParquet || hasBigHint) ["tabnet","ftt"].forEach(id => selected.add(id));
+
+      autoText.textContent =
+        `Recommended: ${selected.size} models — strong baselines + extras based on your files. Switch to MANUAL to customize.`;
+    }
+
+    function setFiles(fileArray) {
+      files = fileArray.slice(0, 3);
+      renderFiles();
+      if (mode === "auto") autoRecommend();
+      syncUI();
+    }
+
+    function renderFiles() {
+      if (!files.length) {
+        fileList.style.display = "none";
+        statusPill.textContent = "NO FILES";
+        return;
+      }
+      statusPill.textContent = `${files.length} FILE${files.length>1?"S":""}`;
+      fileList.style.display = "grid";
+      fileList.innerHTML = "";
+
+      files.forEach((f, idx) => {
+        const row = document.createElement("div");
+        row.className = "fileRow";
+        row.innerHTML = `<span>${f.name}</span>`;
+
+        const x = document.createElement("button");
+        x.className = "xbtn";
+        x.type = "button";
+        x.textContent = "X";
+        x.onclick = () => {
+          files.splice(idx,1);
+          renderFiles();
+          if (mode === "auto") autoRecommend();
+          syncUI();
+        };
+
+        row.appendChild(x);
+        fileList.appendChild(row);
+      });
+    }
+
+    dropZone.addEventListener("click", () => fileInput.click());
+    dropZone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") fileInput.click();
+    });
+    fileInput.addEventListener("change", (e) => {
+      setFiles(Array.from(e.target.files || []));
+      fileInput.value = "";
+    });
+
+    dropZone.addEventListener("dragover", (e) => { e.preventDefault(); });
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      setFiles(Array.from(e.dataTransfer.files || []));
+    });
+
+    clearBtn.onclick = () => {
+      files = [];
+      selected.clear();
+      renderFiles();
+      if (mode === "auto") autoText.textContent = "Upload data to see what Vector recommends.";
+      syncUI();
+    };
+
+    runBtn.onclick = () => {
+      const payload = { mode, models: Array.from(selected), files: files.map(f => f.name) };
+      alert("Would run with:\n" + JSON.stringify(payload, null, 2));
+    };
+
+    function syncUI() {
+      const manualEnabled = (mode === "manual");
+      autoNote.style.display = (mode === "auto") ? "block" : "none";
+
+      document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.disabled = !manualEnabled;
+      });
+
+      ["supAll","supNone","dlAll","dlNone"].forEach(id => {
+        const b = document.getElementById(id);
+        b.disabled = !manualEnabled;
+        b.style.opacity = manualEnabled ? "1" : ".5";
+        b.style.cursor = manualEnabled ? "pointer" : "not-allowed";
+      });
+
+      selectionCount.textContent = `${selected.size} SELECTED`;
+
+      const okFiles = files.length > 0;
+      const okModels = selected.size > 0;
+      runBtn.disabled = !(okFiles && okModels);
+      clearBtn.disabled = !(okFiles || okModels);
+
+      renderModelList(supList, supervisedModels);
+      renderModelList(dlList, deepModels);
+    }
+
+    renderModelList(supList, supervisedModels);
+    renderModelList(dlList, deepModels);
+    syncUI();
+  </script>
+</body>
+</html>
